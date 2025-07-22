@@ -1,1 +1,31 @@
+name: Run Crypto Signal Scanner
+
+on:
+  schedule:
+    - cron: '*/30 * * * *'  # runs every 30 minutes
+  workflow_dispatch:        # allows manual run from GitHub UI
+
+jobs:
+  run-script:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install ccxt pandas ta requests
+
+      - name: Run crypto signal script
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          python crypto_signal.py
 
